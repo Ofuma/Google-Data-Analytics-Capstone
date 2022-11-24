@@ -1,0 +1,758 @@
+---
+title: "Google Data Analytics Capstone"
+author: "Ofuma Eze-Echesi"
+date: '2022-08-26'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **Bellabeat Data Analysis Case Study:** 
+#### How Can a Wellness Technology Company Play it Smart? 
+
+[![Plot this way](https://uspto.report/TM/97057944/mark.png){width=300px}](https://bellabeat.com/){target="_blank"}
+
+### **Scenario**
+I am a junior data analyst working on the marketing analyst team at Bellabeat, a high-tech manufacturer of health-focused products for women. Bellabeat is a successful small company, but has the potential to become a larger player in the global smart device market. Urška Sršen, cofounder and Chief Creative Officer of Bellabeat, believes that analyzing smart device fitness data could help unlock new growth opportunities for the company. I have been asked to focus on one of Bellabeat’s products and analyze smart device data to gain insight into how consumers are using their smart devices. The insights I discover will then help guide marketing strategy for the company. I will present this analysis to the Bellabeat executive team along with my high-level recommendations for Bellabeat’s marketing strategy.
+
+### **About Bellabeat**
+Bellabeat is a successful tech-driven wellness company for women that manufactures health-focused smart products. It was founded in 2013 by Urška Sršen, the Chief Creative Officer(COO) and an artist, and Sando Mur, a mathematician. The technology, which is designed by Sršen, is focused on collecting data on activity, sleep, stress, and reproductive health to inform, inspire and empower women around the world.
+
+Bellabeat has several products such as: 
+
+* **Bellabeat app:** The Bellabeat app provides users with health data related to their activity, sleep, stress, menstrual cycle, and mindfulness habits. This data can help users better understand their current habits and make healthy decisions. The Bellabeat app connects to their line of smart wellness products
+* **Leaf:** Bellabeat’s classic wellness tracker can be worn as a bracelet, necklace, or clip. The Leaf tracker connects to the Bellabeat app to track activity, sleep, and stress
+* **Time:** This wellness watch combines the timeless look of a classic timepiece with smart technology to track user activity, sleep, and stress. The Time watch connects to the Bellabeat app to provide you with insights into your daily wellness
+* **Spring:** This is a water bottle that tracks daily water intake using smart technology to ensure that you are appropriately hydrated throughout the day. The Spring bottle connects to the Bellabeat app to track your hydration levels
+* **Bellabeat membership:** Bellabeat also offers a subscription-based membership program for users. Membership gives users 24/7 access to fully personalized guidance on nutrition, activity, sleep, health and beauty, and mindfulness based on their lifestyle and goals
+
+It currently uses various forms of traditional marketing such as radio, out-of-home billboards, print, and television but is focused extensively on digital marketing and invests in Google search, Youtube ads that support campaigns, active Facebook(Meta) and Instagram pages, and consistent engagement on Twitter.
+
+
+#### **My Role**
+My role is to use the the six-step data analysis process - Ask, Prepare, Process, Analyze, Share and Act, to analyze the use of its Leaf product using proxy data, the Fitbit fitness tracker device, identify trends, gather useful insight and provide recommendations to the marketing team, to help Bellabeat achieve its goal.
+
+#### **1. Ask**
+This step is to identify the problem and business task after reviewing the scenario and considering the stakeholders.
+
+* **Business Task:** To analyze the FitBit Fitness Tracker data set and provide actionable insights about users behaviors and the fitness tracker, to guide the marketing strategy that is focused on increasing Bellabeat's global market share.
+
+#### **2. Prepare**
+This step is to provide information about the data source and format, and to check if the data ROCCC's.
+
+* **Data Source**: The [FitBit Fitness Tracker Data](https://www.kaggle.com/datasets/arashnic/fitbit?resource=download){target="_blank"}, which is the proxy data being used for this project, is stored and openly available on Kaggle. It contains one months worth of data from April to May of 2016. It can be downloaded as a zip folder that contains 18 csv files with data sets with both long and wide data formats.
+
+* Does the data **ROCCC**?
+  * **R**eliability: The data can be deemed ***mostly unreliable*** because the sample size of 30 does not reflect the overall population of about 31 million Fitbit users. Although this sample size is enough for the Central Limit Theorem(CLT) to hold, where the distribution of sample means approximately assume a normal distribution, a sample size of about 385 users would've been more ideal as it would have a 95% confidence interval(CI) and a 5% margin of error. Additionally, in some of the data sets provided, the sample size is significantly less than 30.I also noticed that the maximum sample size was actually 33 and not 30.
+  
+  * **O**riginal: This data was collected from a survey performed on Fitbit users via Amazon Mechanical Turk, a second party. Hence, the data can be considered ***unoriginal***. It would've been more original if it was collected directly from Fitbit.
+  
+  * **C**omprehensive: The data contains details like heart rate seconds, daily activity, weight and minute level information. However. it misses other important information like age, sex, demographic data, location, buyers behavior etc. that would've provided more context to the data and been helpful in understanding better ways in which Bellabeat can reach its users. Additionally, the data could have been collected over a more extended period, preferably about 3 years worth for historical trend analysis, to cover cases where seasonality could impact behavior. Essentially, it is ***not very comprehensive***.
+  
+  * **C**urrent: The data can be considered ***outdated*** because it is now about 7 years old and may misrepresent the current fitness trends.
+  
+  * **C**ited: The data is ***well cited*** as survey data from Amazon Mechanical Turk survey respondents. However, the credibility of this source is to be determined.
+  
+In conclusion, although the data is lacking in various ways and does not entirely ***ROCCC***, it is still worth exploring as it has a sample size just enough to produce potentially useful insights. It also meets the ethical standards of being openly available, transparent to and owned by respondents, consensual, and private. However, it is important to keep in mind that the margin of error on this data set will be about 18% (with a 95% CI). Hence, the recommendations should not be taken at face value. More data should be collected for further analysis.
+
+
+#### **3. Process**
+This step is to process the data for analysis, identify the tools to be used and to clean and transform the data to be ready for analysis. This includes documenting the cleaning process. **R** is going to be used for this entire project.
+
+The first step in this stage is to install and load the packages to be used as shown below:
+
+**Installing Packages** 
+```{r installing packages, warning=FALSE, message=FALSE, echo=TRUE, results='hide'}
+
+#install.packages("tidyverse") # To use a collection of other packages
+#install.packages("dplyr") # For data manipulation and cleaning
+#install.packages("janitor") # For data cleaning
+#install.packages("skimr") # For data cleaning
+#install.packages("readr") # For reading data 
+#install.packages("ggplot2") # For data visualization
+```
+
+**Loading Packages**
+```{r loading packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(skimr)
+library(janitor)
+library(readr)
+library(ggplot2)
+library(lubridate)
+```
+
+Next will be to import the data sets to be used.
+
+**Import csv files**
+```{r import csv files, warning=FALSE}
+
+setwd("C:\\Users\\Ofumae\\OneDrive - University Of Oregon\\Desktop\\Personal Docs\\GDA\\Fitabase Data 4.12.16-5.12.16") #set working directory
+
+daily_activity <- read.csv("dailyActivity_merged.csv")
+sleep_day <- read.csv("sleepDay_merged.csv")
+weight_log <- read.csv("weightLogInfo_merged.csv")
+heartrate_secs <- read.csv("heartrate_seconds_merged.csv")
+hourly_calories <- read.csv("hourlyCalories_merged.csv")
+```
+
+Then preview the data to check for errors, nulls or formatting issues
+
+**Daily Activity Check**
+```{r view activity, warning=FALSE}
+# View a subset of the data
+as_tibble(head(daily_activity))
+```
+
+Check the number of unique Id's and the number of days activities were recorded, respectively
+```{r daily activity expl}
+length(unique(daily_activity$Id))
+length(unique(daily_activity$ActivityDate))
+```
+The above count shows that there are 33 respondents and not 30 as stated in the data source, and 31 days or a months worth of data and not 2 months as stated in the data source.
+
+Next, I will check for zeros and filter them out, if necessary.
+```{r filter daily activity, warning=FALSE}
+# Check the number of zeros in each column
+colSums(daily_activity==0)
+
+# Count the new number of rows
+nrow(daily_activity)
+```
+Note that customers with zero steps have no active minutes but have sedentary minutes, so I will not exclude the zeros so it doesn't affect my analysis of sedentary minutes. Note that there about 7 instances where there is data for steps and none for any of the active minutes, which raises issues with reliability of the data or the Fitbit tracker. There is also 1 instance where the tracker picked up very active minutes but no steps, which is possible because one can be very active riding a bike, for example, which doesn't need steps.
+ 
+Check for null values. Typically nulls show when you check for zero using colSums because if there is a null, it cannot sum up the column and will return "NA".
+```{r check nulls for daily activity}
+colSums(is.na(daily_activity))
+```
+This means that the are no null values in any column.
+
+Finally, I will convert the Id column to character and exclude the columns I will not use. Total steps indicate the number of steps that the users were active or not sedentary, so I will keep this column. However, according to recent studies, like in the article, [Why Your Fitbit Minutes Mean More Than Your Steps by Nicola Leach](https://www.awpnow.com/main/2018/01/16/why-your-fitbit-active-minutes-mean-more-than-your-steps/){target="_blank"}, active minutes is a more useful metric than steps. It mentions how active minutes go beyond 10,000 steps, how the intensity of activity in steps are not measured etc. Additionally, I would add that activities like stationery biking, yoga or abdominal exercises will be overlooked if we focused on just steps or distance. Based on this finding and observation, I will be focusing more on minutes. Hence, I will exclude most of the distance columns.
+
+```{r exclude columns in daily activity}
+# Create new data frame
+new_daily_activity <- daily_activity 
+
+# Change column type for Id to character
+new_daily_activity$Id <- as.character(new_daily_activity$Id)
+
+# Select Columns
+new_daily_activity <- new_daily_activity %>%
+  select(Id, ActivityDate, TotalSteps, TotalDistance, TrackerDistance, LoggedActivitiesDistance, VeryActiveMinutes, FairlyActiveMinutes, LightlyActiveMinutes, SedentaryMinutes, Calories)
+
+as_tibble(head(new_daily_activity))
+```
+
+Check for duplicate entries in this data set
+```{r daily duplicates}
+nrow(new_daily_activity)
+nrow(unique(new_daily_activity))
+```
+There are no duplicates in the new daily activity data set. 
+
+**Sleep Day Check**
+```{r sleep day}
+# Preview the data
+as_tibble(head(sleep_day))
+```
+
+```{r sleep day unique ids}
+# Convert the Id data type to character
+sleep_day$Id <- as.character(sleep_day$Id)
+
+# Check the number of unique Id's in the table
+length(unique(sleep_day$Id))
+```
+The above shows that there are only 24 customers that have sleep-related data available. 
+
+Next, check for zeros and filter them out
+```{r filter sleep day}
+colSums(sleep_day==0)
+# This means that there are no zeros or null values, as explained earlier
+```
+
+In the preview, you will notice that the "SleepDay" column has both date and time so I will separate those. Separate the "SleepDay" column into two separate columns
+
+```{r sleep day date time}
+
+# This function is to make sure that the time column keeps the am and pm portion
+
+splitdaytime <- data.frame(do.call(rbind, strsplit(as.character(sleep_day$SleepDay), "(?<=/\\d{4})", perl=TRUE)))
+names(splitdaytime) <- c("Date", "Time")
+
+new_sleep_day <- cbind(sleep_day$Id, sleep_day$SleepDay, splitdaytime, sleep_day$TotalSleepRecords, sleep_day$TotalMinutesAsleep, sleep_day$TotalTimeInBed) 
+
+# Rename columns
+colnames(new_sleep_day)=c("Id", "SleepDay", "SleepDate", "SleepTime", "TotalSleepRecords", "TotalMinutesAsleep", "TotalTimeInBed")
+
+as_tibble(head(new_sleep_day))
+```
+
+Check for duplicates
+```{r sleep dupes}
+nrow(new_sleep_day)
+nrow(unique(new_sleep_day))
+```
+This means there are 3 duplicates, which I will exclude next.
+```{r exc sleep dupes}
+# Exclude the duplicates
+new_sleep_day <- unique(new_sleep_day)
+```
+
+
+**Weight Log Check**
+```{r weight, warning=FALSE}
+# Preview the data
+as_tibble(head(weight_log))
+```
+
+```{r weight log unique ids}
+# Convert the Id data type to character
+weight_log$Id <- as.character(weight_log$Id)
+
+# Check the number of unique Id's in the table
+length(unique(weight_log$Id))
+```
+This shows that only 8 or 24% of respondents provided their weight information through out the 31 days, which is a small sample size.
+
+```{r rows of weight log}
+# Count the number of rows
+nrow(weight_log)
+```
+However, with 67 rows or entries, it is worth exploring.
+
+Check for zeros and filter them out
+```{r check zeros for weight log}
+colSums(weight_log==0)
+```
+This means that there are no zeros but there are null values as indicated by "NA" in the FAT column.I will explore this more to check the count of null values.
+```{r check nulls for weight log}
+colSums(is.na(weight_log))
+```
+This means that out of 67 entries for Fat, 65 were null. We don't need to exclude the rows because other columns with entries will be needed for analysis. We will not use the Fat column.
+
+Next is to separate the date column into 2 separate columns like in sleep_day
+```{r weight log date time}
+
+splitdate <- data.frame(do.call(rbind, strsplit(as.character(weight_log$Date), "(?<=/\\d{4})", perl=TRUE)))
+names(splitdate) <- c("Day", "Time")
+
+new_weight_log <- cbind(weight_log$Id, weight_log$Date, splitdate, weight_log$WeightKg, weight_log$WeightPounds, weight_log$BMI, weight_log$IsManualReport, weight_log$LogId) 
+
+# Rename columns
+colnames(new_weight_log) = c("Id", "Date", "WeightDay", "WeightTime", "WeightKg", "WeightPounds", "BMI", "IsManualReport", "LogId") # excluded "Fat" as I will not be using it
+
+as_tibble(head(new_weight_log))
+```
+
+
+Check for duplicates
+```{r weight dupes}
+nrow(new_weight_log)
+nrow(unique(new_weight_log))
+```
+There are no duplicates. 
+
+
+**Heart Rate Secs Check**
+```{r heartrate}
+# Preview the data
+as_tibble(head(heartrate_secs))
+
+# Check the number of unique Id's
+length(unique(heartrate_secs$Id))
+
+# Check for zeros
+colSums(heartrate_secs==0)
+```
+This shows that 14 or 42% of respondents logged their heart rate information. There are no nulls or zeros.
+
+Convert the Id column to character and change the Value column name to Heart Rate
+```{r hr col name change}
+# Convert Id data type to character
+heartrate_secs$Id <- as.character(heartrate_secs$Id)
+
+# Change the column name of Value
+heartrate_secs <- rename(heartrate_secs, HeartRate = Value)
+as_tibble(head(heartrate_secs))
+```
+
+
+Check for duplicate entries
+```{r daily dupes}
+nrow(heartrate_secs)
+# nrow(unique(heartrate_secs))
+```
+This data set seems too large to check for unique rows. I will not be working with it after the analyze stage. Note, I aggregated it into an average, which worked well but will not work when I try to export the document.
+
+
+**Hourly Calories Check**
+```{r hourly cals}
+as_tibble(head(hourly_calories))
+```
+
+```{r hr cals unique}
+# Check number of unique id's
+length(unique(hourly_calories$Id))
+```
+
+```{r hr cals zeros or nulls}
+colSums(hourly_calories==0)
+```
+There are no null values
+
+Convert the Id column's data type to character and the ActivityHour column to datetime format
+```{r hours}
+# Convert the Id data type to character
+hourly_calories$Id <- as.character(hourly_calories$Id)
+
+# Create new data frame to create new changes  
+new_hourly_calories <- hourly_calories
+
+# Change the ActivityHour format
+new_hourly_calories[["ActivityHour"]] <- as.POSIXct(new_hourly_calories[["ActivityHour"]], format = "%m/%d/%Y %I:%M:%S %p")
+
+# Add new column with the formatted hour                                                  
+new_hourly_calories[["Hour"]] <- format(as.POSIXct(new_hourly_calories[["ActivityHour"]]), format = "%H")
+
+as_tibble(head(new_hourly_calories))
+```
+
+Check for duplicates
+```{r hourly dupes}
+nrow(new_hourly_calories)
+nrow(unique(new_hourly_calories))
+```
+There are no duplicates. 
+
+Now that the data is clean, I will move on to the next step, which is to analyze the data.
+
+
+#### **4. Analyze**
+
+In this step, I will aggregate, organize and format the data sets as needed, perform calculations, identify trends and relationships, and provide a summary.
+
+First, I will view the summary of the measures I will be using for my analysis and visualization from each data set, which can also be interpreted as the metrics of the Fitbit tracker.
+
+```{r check for outliers}
+summary(new_daily_activity[c("TotalSteps", "TotalDistance", "TrackerDistance", "LoggedActivitiesDistance", "VeryActiveMinutes", "FairlyActiveMinutes","LightlyActiveMinutes", "SedentaryMinutes", "Calories")])
+summary(new_sleep_day[c("TotalMinutesAsleep")])
+summary(new_weight_log[c("WeightKg", "WeightPounds", "BMI")])
+summary(heartrate_secs[c("HeartRate")])
+summary(new_hourly_calories[c("Calories")])
+```
+
+**Summary Overview**
+
+This shows a high level overview of the data sets and what the present. The key findings that I would like to point out are:
+
+* On average, users took a total of 7,683 steps (about 3.4 miles) per day. Based on data from the fitness tracker users in the [verywellfit article](https://www.verywellfit.com/whats-typical-for-average-daily-steps-3435736){target="_blank"}, by Ryan Kelly, this is above the average steps of users in not only the U.S. but also in the UK, France and Germany. It is also close to the 8,000  steps (approximately 3.6 miles) per day, which is said to be associated with a 51% lower death rate from any cause, according to the [CDC](https://www.cdc.gov/media/releases/2020/p0324-daily-step-count.html){TARGET="_blank"}.
+
+* Users burned about 2,300 calories per day (and 97 per hour) on average, which is over the average of 2,000 that women burn per day according to [Nike](https://www.nike.com/a/how-many-calories-should-you-burn-daily){target="blank"}.
+
+* On average users were active for about 228mins or 4hrs active (lightly, fairly and very) and about were sedentary for about 17hrs per day. They spent almost 90% of the active time on being lightly active. However, the [CDC](https://www.cdc.gov/physicalactivity/basics/adults/index.htm){TARGET="_blank"} recommends up to 30mins a day on moderate exercise, which in this case can be considered fairly active, of which our users only do about 14mins of per day.
+
+* Users spend about 7hrs asleep on average, which is within the average hours recommended for adults based on the [HopkinsMedicine article](https://www.hopkinsmedicine.org/health/wellness-and-prevention/oversleeping-bad-for-your-health#:~:text=Sleep%20needs%20can%20vary%20from,an%20underlying%20problem%2C%20Polotsky%20says.){target="_blank"}. 
+
+* Users weighted an average of 159lbs (72kg) during that period, which is up to 17 pounds below the average weight for women above the age of 20, according to [Healthline](https://www.healthline.com/health/womens-health/average-weight-for-women#:~:text=The%20average%20American%20woman%2020,It's%2038.6%20inches.){target="_blank"}
+
+* Users had an average BMI of 25.19, which is considered overweight, according to [Wikipedia](https://en.wikipedia.org/wiki/Body_mass_index){target="_blank"}.
+
+* Users had a resting heart rate of 77bpm, which is also within the ideal range of 60 to 100 based on this [Mayo Clinic article](https://www.mayoclinic.org/healthy-lifestyle/fitness/expert-answers/heart-rate/faq-20057979#:~:text=Laskowski%2C%20M.D.,to%2040%20beats%20per%20minute.){target="_blank"}.
+
+
+
+**Other Observations**
+
+I noticed that there are several zeros in "LoggedActivitiesDistance", which means that several respondents don't log their activities. So, below is the percentage distribution to see how often users logged their activities distance.
+```{r logged activity distance}
+# Add a new column to check which respondents didn't log
+new_daily_activity$LoggedByUser = ifelse(new_daily_activity$LoggedActivitiesDistance==0, "No","Yes")
+
+# Find percent distribution
+Logged_Pct <- new_daily_activity %>%
+  group_by(LoggedByUser) %>%
+  summarise(percent = 100 * n()/ nrow(new_daily_activity))
+
+# reduce decimal places to zero
+Logged_Pct %>%
+  mutate_if(is.numeric, round, digits = 0)
+```
+This shows that users logged in their activities distance only 3% of the time during the reported period. It can be assumed that users do not enjoy logging in their activities. 
+
+Additionally, from the data, we can see there fields named total distance and tracker distance. It is not certain where the total distance field is pulling data from but based on my calculations, they have different totals, with total distance being higher.
+```{r Fitbit accuracy}
+# Difference between total distance and tracker distance
+sum(new_daily_activity$TotalDistance - new_daily_activity$TrackerDistance)
+
+# Find the percentage accuracy
+TrackerAccuracy <- sum(new_daily_activity$TotalDistance == new_daily_activity$TrackerDistance, na.rm = T) / nrow(new_daily_activity) *100
+
+paste(format(round(TrackerAccuracy, 0), nsmall = 0), "%")
+```
+Based on the total distance, the tracker is 98% accurate, which is insightful for the marketing strategy.
+
+**SWOT Analysis of the FitBit Tracker** 
+
+In pulling insights from the data, it is important to not only learn about our customers behavior but also about the fitness tracker's capabilities, limitations and opportunities. 
+
+**Strengths**
+
+* The Fitbit tracker collects data on key aspects of customers fitness behaviors as seen above and can greatly assist them in reaching their fitness goals. 
+
+* Based on the total distance captured, the Fitbit tracker has a 98% accuracy rate.
+
+**Limitations or Threats**
+
+* The are several zeros in logged activities distance, meaning that users don't want an additional task of logging their data in.
+
+* Other than the daily activity data set with 33 unique id's, the others have less users info with the weight log having as little as 8 unique id's.
+
+* There is missing data as mentioned earlier where there are thousands of steps recorded but no active minutes and vice versa.This is worth investigating to prevent our users from moving to competitors.
+
+**Opportunities**
+
+* With the thought of the AIDAA(Awareness, Interest, Desire, Action and Advocacy) marketing funnel, the first step is to create awareness of the product to spark the interest and desire of prospective customers that will buy the product and advocate for it. So, inform current and prospective users of the capability of the tracker to help achieve their fitness goals, and inform the current users of their fitness achievements periodically. Performance could be their average steps, calories, heart rate, etc.
+
+* Dive deeper into the data set to better identify more trends and relationships between the key metrics, as well as the consumer behaviors and attributes.
+
+**Threats**
+
+* Our users converting to other products due to inefficiencies or inconsistent data collection by the device.
+
+* Credibility of existing brands.
+
+
+Before the next step, I will arrange my data set in descending order (because of the zeros)to make it cleaner and easier to understand or work with.
+
+**Organize the data sets**
+```{r arrange, echo=TRUE, results='hide'}
+new_daily_activity <- new_daily_activity %>% arrange(-TotalSteps)
+new_sleep_day <- new_sleep_day %>% arrange(-TotalMinutesAsleep)
+new_weight_log <- new_weight_log %>% arrange(-WeightPounds)
+new_hourly_calories <- new_hourly_calories %>% arrange(-Calories)
+# Excluding heart rate data because it is too big
+```
+
+
+
+#### **5. Share**
+
+In this step, I will create visualizations to communicate insights and recommendations as well as identify more trends and relationships within the data sets.
+
+**Distribution of Activities in Minutes**
+```{r active pie, echo=FALSE}
+# Set both pie charts to display on 1 row
+par(mfrow=c(1,2)) 
+
+# Create a pie chart-1
+VeryActive <- sum(new_daily_activity$VeryActiveMinutes)
+FairlyActive <- sum(new_daily_activity$FairlyActiveMinutes)
+LightlyActive <- sum(new_daily_activity$LightlyActiveMinutes)
+Sedentary <- sum(new_daily_activity$SedentaryMinutes)
+TotalMinutes <- VeryActive + FairlyActive + LightlyActive + Sedentary
+
+# Create a pie chart-2
+VeryActive <- sum(new_daily_activity$VeryActiveMinutes)
+FairlyActive <- sum(new_daily_activity$FairlyActiveMinutes)
+LightlyActive <- sum(new_daily_activity$LightlyActiveMinutes)
+TotalActiveMinutes <- VeryActive + FairlyActive + LightlyActive
+
+slices <- c(VeryActive,FairlyActive,LightlyActive,Sedentary)
+lbls <- c("Very Active","Fairly Active","Lightly Active","Sedentary")
+pct <- round(slices/sum(slices)*100)
+lbls <- paste(lbls, pct)
+lbls <- paste(lbls, "%", sep="")
+pie(slices, radius=0.7, labels = lbls, cex=0.6, col = cm.colors (length(lbls)), main = "Total Minutes")
+
+slices <- c(VeryActive,FairlyActive,LightlyActive)
+lbls <- c("Very Active","Fairly Active","Lightly Active")
+pct <- round(slices/sum(slices)*100)
+lbls <- paste(lbls, pct)
+lbls <- paste(lbls, "%", sep="")
+pie(slices, radius=0.7, labels = lbls, cex=0.6, col = cm.colors (length(lbls)), main="Active Minutes")
+```
+
+This shows that during the period, users spent most of their time sedentary and most of their active time lightly active. When users were active, they spent 85% of their time lightly active, which means they were either performing a very low intensity exercise or just doing day to day activity chores. According to the [Science Alert article](https://www.sciencealert.com/you-need-more-than-just-30-minutes-of-exercise-to-counteract-sitting-all-day){target="_blank"}, if people spent 30 minutes a day being active and less than 7 hours just sitting, they could decrease their risk of early death by up to 80%. Additionally, this article also suggests that people that spend about 1 hour a day being very or fairly active, including other light at home activities like house work can improve their health. This suggests that our users can spend more time being very or fairly active.
+
+
+**Health Status or BMI Distribution**
+
+Here, I would like to show the BMI or health status of users as we saw from the summary that the average user who logged their weight in is considered overweight. BMI stands for Body Mass Index and is an indicator of how healthy a person is based on their weight and height. This [Wikipedia webpage](https://en.wikipedia.org/wiki/Body_mass_index){target="_blank"}, explains that a healthy BMI range is 18.5 to 24.9. See the code below for a breakdown.
+```{r bmi bd, echo=TRUE, results='hide'}
+# Find the average weight per user
+avg_weight <- aggregate(cbind(WeightKg, WeightPounds, BMI) ~ Id, data = weight_log, FUN = mean, na.rm = TRUE)
+
+# Create new column to breakdown BMI into levels to view their healthy status
+avg_weight <- avg_weight %>%
+  mutate(BMILevel = case_when(BMI < 18.5 ~ 'Underweight'
+                              , (BMI >= 18.5) & (BMI <= 24.9) ~ 'Healthy'
+                              , (BMI > 24.9) & (BMI <= 29.9) ~ 'Overweight'
+                              , (BMI > 29.9) ~ 'Obese'
+                              ))
+
+as_tibble(head(avg_weight["BMILevel"]))
+```
+
+Next, I will create a bar chart to see the distribution of the BMI levels or health status.
+
+```{r BMI Bar distribution, echo=FALSE}
+# Create the chart
+
+avg_weight %>%
+  select(BMI, BMILevel)%>%
+  group_by(BMILevel)%>%
+  summarise(total=n())%>%
+  mutate(percent=total/sum(total))%>%
+  ungroup() %>% 
+  arrange(desc(total)) %>%
+    ggplot(aes(reorder(x=BMILevel,-percent),  y=percent))+
+    geom_bar(stat="identity", fill='rosybrown1')+
+    labs(title="BMI Health Status", x="BMI Status", y= "Percent of Users")+
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1))
+```
+
+This shows that, based on BMI, about 38% of users are healthy, and 62% are overweight or obese. Since only 24% of users logged their weight, we only know of 15% of users who are either overweight or obese. This means that at least, some users will be focused on not just maintaining health and fitness but on losing weight. 
+
+**Average Calories Burned by User**
+```{r bar very}
+# Create the average
+avg_daily_activity <- aggregate(cbind(TotalSteps, TotalDistance, TrackerDistance, LoggedActivitiesDistance, Calories, VeryActiveMinutes, FairlyActiveMinutes, LightlyActiveMinutes, SedentaryMinutes) ~ Id, data = new_daily_activity, FUN = mean, na.rm = TRUE)
+
+# Reshape the data to put the active minutes per type into categories
+long_active_mins <- pivot_longer(avg_daily_activity, c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes"), names_to = "ActivityType", values_to = "ActivityMinutes")
+
+# Create the chart
+ggplot(data=long_active_mins, aes(x=Id, y=Calories, fill=ActivityType))+
+  geom_bar(stat="identity")+
+  scale_fill_manual(values = c("#FFCCCC", "#FF99CC", "#CC6699"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  labs(title="Average Calories Burned by User", subtitle="Between April & May", x="Id", y="Average Calories Burned")
+```
+
+This shows that on average, users who spent more time very active or fairly active burned more calories. It also shows that fewer users prefer to be very active or fairly active for shorter periods of times, while most users were mostly lightly active for prolonged periods of times per day during that period.Additionally, April and May is the period the data was collected, even though it was a 31 day period. It is important to note that seasonality can affect activity levels, which is why more data will be needed to identify trends or make a conclusion like this for other months of the year. 
+
+
+Next, I would like to see the correlation between total steps and calories burned.
+```{r activity correlation, warning=FALSE, message=FALSE}
+# Create scatter plot
+ggplot(data=new_daily_activity) +
+  geom_point(mapping=aes(x=TotalSteps, y=Calories, color=VeryActiveMinutes))+
+  geom_smooth(method=lm, mapping=aes(x=TotalSteps, y=Calories), color="black")+
+  scale_color_gradient(low="blue", high="orange")+
+  labs(title="The Correlation Between Total Steps & Calories Burned", x="Total Steps", y="Calories Burned") + 
+  annotate("text", x=30000, y=200, label="This shows a positive relationship", size=3, color="black")+
+  annotate("text", x=30000, y=3800, label="r=0.59", size=3.5, color="black")
+```
+```{r total steps coeff, include=FALSE}
+# Correlation Coefficient
+cor(new_daily_activity$TotalSteps, new_daily_activity$Calories) #moderate
+```
+This shows a moderate positive relationship between total steps and calories burned. The more steps a user takes, the more calories burned. However, it also shows a concentration of users who have very active minutes of about 50minutes or less burn about 1,000 to 3,000 calories a day and take less than 10,000 steps. Additionally, some users with very active minutes of less than 50mins and burned over 2,000 calories per day take little to no steps. This means that users engage in activities that don't require steps.
+
+It can be assumed from this chart that the Fitbit tracker is good at tracking active minutes and calories burned and not just steps. The active minutes and calories are instrumental in helping people reach fitness goals. 
+
+
+To gain more insight into each activity level, I will create a similar chart that displays the relationship between all active minutes and calories burned.
+```{r corr activities, message=FALSE}
+# Create correlation between activities
+ggplot(data=new_daily_activity) +
+  geom_point(mapping=aes(x=VeryActiveMinutes, y=Calories, alpha=I(0.5)), color="purple")+
+  geom_point(mapping=aes(x=FairlyActiveMinutes, y=Calories, alpha=I(0.5)), color="deeppink2")+
+  geom_point(mapping=aes(x=LightlyActiveMinutes, y=Calories, alpha=I(0.5)), color="orange")+
+  geom_smooth(method=lm, mapping=aes(x=VeryActiveMinutes, y=Calories), color="purple", se=F)+
+  geom_smooth(method=lm, mapping=aes(x=FairlyActiveMinutes, y=Calories), color="deeppink2", se=F)+
+  geom_smooth(method=lm, mapping=aes(x=LightlyActiveMinutes, y=Calories), color="orange", se=F)+
+  labs(title="The Relationship Between Each Activity Level & Calories Burned", x="Total Activities Minutes", y="Calories Burned")+
+  annotate("text", x=170, y=4800, label="Very Active", size=3.3, color="black")+
+  annotate("text", x=180, y=3800, label="Fairly Active", size=3.3, color="black")+
+  annotate("text", x=480, y=3000, label="Lightly Active", size=3.3, color="black")+
+  annotate("text", x=220, y=4600, label="r=0.62", size=3.3, color="black")+
+  annotate("text", x=160, y=3500, label="r=0.30", size=3.3, color="black")+
+  annotate("text", x=480, y=2600, label="r=0.29", size=3.3, color="black")
+```
+
+```{r corr fair light, include=FALSE}
+cor(new_daily_activity$VeryActiveMinutes, new_daily_activity$Calories) #strong
+cor(new_daily_activity$FairlyActiveMinutes, new_daily_activity$Calories) #weak
+cor(new_daily_activity$LightlyActiveMinutes, new_daily_activity$Calories) #weak 
+```
+
+According to this [module](https://sphweb.bumc.bu.edu/otlt/MPH-Modules/PH717-QuantCore/PH717-Module9-Correlation-Regression/PH717-Module9-Correlation-Regression4.html){target="_blank"},  a strong correlation is between 0.6 to 0.8. This chart shows that Very Active Minutes has not only a strong positive relationship with calories burned, but has the strongest correlation among all types of activities including total steps as shown in the previous chart. This means that when a user is very active, they burn more calories than when they are lightly or fairly active, or sedentary. It is the most impactful form of exercise, while being the least time consuming of all.
+
+
+I have noticed a trend with very active minutes and calories, and would like to take a closer look at very active minutes
+```{r correlation activities, warning=FALSE, message=FALSE}
+# Create scatter plot for only very active minutes
+ggplot(data=new_daily_activity) +
+  geom_point(mapping=aes(x=VeryActiveMinutes, y=Calories, color=TotalSteps))+
+  geom_smooth(method=lm,mapping=aes(x=VeryActiveMinutes, y=Calories), color="purple", se=F)+
+  scale_color_gradient(low="orange", high="blue")+
+  labs(title="The Correlation Between Very Active Minutes & Calories Burned", x="Very Active Minutes", y="Calories Burned")+
+  annotate("text", x=165, y=200, label="This shows a positive relationship", size=3.3, color="black")+
+  annotate("text", x=180, y=4800, label="r=0.62", size=3.3, color="black")
+```
+
+The chart above shows a positive relationship between very active minutes and calories burned, meaning that the longer users were very active, the more calories were burned. Additionally, the chart shows that active users that are very active for under 50 mins and burn between 1500 to 3500 calories per day. 
+
+There is also a dense period where users have little to no very active minutes but burned over 1000 calories, so I added total steps to color to get an understanding. This shows that there are instances where very active minutes are less than 10 mins and total steps were less than 10,000 but calories being burned customers where still significant. This could be attributed to the fact that the users also performed other activities(fairly active or light) during the day. More data needs to be collected for further analysis.
+
+If our users have a goal to lose weight, which requires burning of more calories than is consumed, one way for them to achieve their goal is to be very active for less than 50 minutes daily.
+
+The next step is to identify trends through out the week.
+```{r add active mins}
+# Create a new column to show weekdays
+new_daily_activity$WeekDay <- wday(as.Date(new_daily_activity$ActivityDate, format = "%m/%d/%Y"), label=TRUE)
+
+# Reorder Weekday to start on Monday
+new_daily_activity$WeekDay <- factor(new_daily_activity$WeekDay, levels=c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+
+# Create new column for all active minutes
+new_daily_activity$ActiveMinutes <- rowSums(new_daily_activity[,c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes")])
+
+# Create the plot
+ggplot(data=new_daily_activity, aes(x=WeekDay, y=ActiveMinutes, fill=WeekDay))+
+  geom_bar(stat="identity", fill="rosybrown1")+
+  labs(title="Active Minutes per Day of the Week", x="Weekday", y="Active Minutes")
+```
+
+This shows that users were mostly active on Tuesdays during the week and on Saturday during the weekend. Users prefer to spend less time being active on Sundays.
+
+```{r sedentary minutes per day, echo=FALSE}
+
+long_daily_activity <- pivot_longer(new_daily_activity, c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes", "SedentaryMinutes"), names_to = "ActivityType", values_to = "ActivityMinutes")
+
+ggplot(data=new_daily_activity, aes(x=WeekDay, y=SedentaryMinutes, fill=WeekDay)) +
+  geom_bar(stat="identity", fill="rosybrown1")+
+  labs(title="Sedentary Minutes per Week Day")
+```
+
+This shows a similar trend to active minutes in terms of the Weekday with the most sedentary minutes, Tuesday, which is a little surprising. However, we can see that Sunday has a slightly higher number of sedentary minutes than Saturday throughout the month. I expected Sunday to have significantly more sedentary minutes than Saturday or all other days. In this scenario, it will be worthwhile to see if Sunday has significantly less steps than other days, so I will explore that next.
+
+```{r steps week, echo=FALSE}
+ggplot(data=new_daily_activity, aes(x=WeekDay, y=TotalSteps, fill=WeekDay)) +
+  geom_bar(stat="identity", fill="rosybrown1")+
+  labs(title="Total Steps per Week Day", x= "Weekday", y="Total Steps")
+```
+
+This chart shows that users took significantly less steps on Sundays than any other day in the week, which could mean that they rested more from physical activity on Sundays.
+
+
+Based on these findings, it will be important to identify times within the day that users are most active based on calories burned, since there is a positive relationship between active minutes and calories burned.
+```{r hourly calories}
+ggplot(data=new_hourly_calories, aes(x=Hour, y=Calories, fill=Hour))+
+  geom_bar(stat="identity")+
+  labs(title="Calories Burned Per Hour",  x="Hour", y= "Calories Burned")
+```
+This shows that the most calories were burned between 5pm and 7pm, and 12pm and 2pm in the afternoon, meaning that users are more active during lunch hours and after work.
+
+
+In terms of weight, I would like to see if there is a relationship between active minutes and weight.
+```{r cals and weight, message=FALSE, warning=FALSE}
+# Create merge with weight data and daily activity data
+activity_weight <- merge(new_daily_activity, weight_log, by="Id")
+
+ggplot(data=activity_weight) +
+  geom_point(mapping=aes(x=ActiveMinutes, y=WeightPounds), color = "deeppink2")+
+  geom_smooth(mapping=aes(x=ActiveMinutes, y=WeightPounds), color="black")+
+  scale_color_gradient(low="orange", high="blue")+
+  labs(title="The Relationship Between Active Minutes & Weight", x="Active Minutes", y="Weight")+
+  annotate("text", x=510, y=160, label="r=-0.11", size=3.3, color="black")
+```
+```{r lbs act mins corr, include=FALSE}
+cor(activity_weight$ActiveMinutes, activity_weight$WeightPounds)
+```
+
+This shows a low and negative relationship between weight and active minutes meaning that users typically spent less time in active minutes the more they weighed, especially users considered obese (up to 290lbs) who spent spent less than 200minutes 0r 3hrs active per day. Additionally, most users under 200lbs spent 200 to 400 minutes or 3 to 7 hrs active per day.
+
+Would this be the same for steps?
+```{r calories and weight, message=FALSE, warning=FALSE}
+# Create merge with weight data and daily activity data
+
+activity_weight <- merge(new_daily_activity, weight_log, by="Id")
+
+ggplot(data=activity_weight) +
+  geom_point(mapping=aes(x=TotalSteps, y=WeightPounds), color = "deeppink2")+
+  geom_smooth(mapping=aes(x=TotalSteps, y=WeightPounds), color="black")+
+  scale_color_gradient(low="orange", high="blue")+
+  labs(title="The Correlation Between Total Steps & Weight", x="Total Steps", y="Weight")+
+  annotate("text", x=28000, y=200, label="r=0.26", size=3.3, color="black")
+```
+```{r corr steps, include=FALSE}
+cor(activity_weight$TotalSteps, activity_weight$WeightPounds)
+```
+
+No! Although weak, this shows a positive relationship meaning that essentially, when users weighed more, they took more steps. We can see from the chart that in some cases, users that weighed 200lbs or more took little to no steps, while in some other cases, when users weighed between 175lbs and 200lbs, they took 2 to 3 times more steps than users who weighed under 150lbs.
+
+This could be a confirmation that some of our users are focused on improving their health and possibly weight loss.
+
+Finally, I would like to discover the sleep habits of our users and its impact on their activity levels.
+
+```{r activesleep}
+# Merge sleep with activity by id
+sleep_active <- merge(new_daily_activity, new_sleep_day, by="Id")
+
+new_daily_activity$ActiveMinutes <- rowSums(new_daily_activity[,c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes")])
+
+ggplot(data=sleep_active) +
+  geom_point(mapping=aes(x=TotalMinutesAsleep, y=ActiveMinutes, color=Calories))+
+  geom_smooth(method="gam", formula = y ~ s(x, bs = "cs", fx = TRUE, k = 20), mapping=aes(x=TotalMinutesAsleep, y=ActiveMinutes), color="black")+
+  scale_color_gradient(low="orange", high="blue")+
+  labs(title="The Relationship Between Active Minutes & Total Minutes Asleep", x="Total Minutes Asleep", y="Active Minutes")+
+  annotate("text", x=660, y=20, label="This shows little to no relationship", size=3.5, color="black")+
+  annotate("text", x=750, y=220, label="r=-0.02", size=3.5, color="black")
+```
+
+```{r corrsleep, include=FALSE}
+cor(sleep_active$ActiveMinutes, sleep_active$TotalMinutesAsleep)
+```
+
+Although this chart shows little correlation that is negative, some insights can be drawn from it. Between 320 to about 550mins or 5 to 9hrs of sleep, we can see that users were able to spend more times at active through out the day. After about 550mins or 9hrs of sleep the number of times users were active significantly dropped. Additionally, there is a dense population of activities/sleep where users who got between 320 to 550 mins or 5 to 9hrs of sleep spent about 200 to 380mins or 3 to 6 hrs active per day and burned the most calories(over 2,000).
+
+
+#### **6.Act**
+
+This is the final step of the data analysis process. Here, I will share a quick recap of the business task, my process, the key insights, recommendations and final conclusion. 
+
+**Recap**
+
+The business task is to analyze the FitBit Fitness Tracker data and provide actionable insights about users behaviors and the fitness tracker, to guide the marketing strategy that is focused on increasing Bellabeat's global market share.
+
+I used Fitbit tracker data on daily activities, sleep, weight, heart rate and hourly calories to perform this analysis. While the data is ethical to a degree, it is limited in sample size, and being comprehensive and up-to-date. More current and extensive data should be collected for further analysis to ensure that the trends are representative
+
+**Key Insights**
+
+* The tracker is 98% accurate in tracking distance and is great at tracking not just steps taken but active minutes spent doing exercises and other activities not associated with walking.
+
+* Users spend 81% of their time sedentary, and when active, they spend 85% of that time only lightly active.
+
+* About 15% or more users are overweight or obese and will be focused on losing weight.
+
+* Minutes spent being very active had the most impact on our users as it helps them burn up to 3,000 steps and can be done under 50 minutes, while taking less than 10,000 steps. 
+
+* Users who spent more time asleep, between 5 to 9hrs, were able to spend more time being active.
+
+* Users were mostly active on Tuesdays, and during lunch times (12-2pm) and after work times (5-7pm).
+
+**Recommendations**
+
+For Bellabeat to increase market share, I would recommend that the marketing team focus on the following: 
+
+* Creating awareness by highlighting the key benefits of its products such as, the information that can be tracked like weight, active minutes, steps, sleep etc. Another thing to point out is how well activities that don't involve steps are tracked. We can communicate how we can meet users where they are, regardless of activity type, and help them lose weight or achieve any other fitness goal. Finally, after pulling more data and validating it, sharing the high tracking accuracy rate could be beneficial in increasing customers confidence in our data.
+
+* Identify the target audience and tailor their marketing tactics to them. From the data sets and information provided, they are women who are interested in improving their health and in achieving fitness goals such as weight loss.
+
+* Empowering users on their fitness journey by sharing their respective and personalized achievements through the tracking device, periodically. An example, could be congratulating them on reaching a maximum activity level or maximum number of steps taken, weekly. Another strategy could be to inform them daily through a notification on their device, if they've spent too long being sedentary.
+
+* Informing users about how we can save them time and energy trying to log most of their activities because we automatically collect data such as distance, steps and active minutes. Since users don't log in their distance or activities about 97% of the time, adopting a way to encourage them to log the more manual data like weight will be beneficial. Additionally, if sleep, heart rate and others are not automatically logged, that is an area for Bellabeat to focus on automating. An approach could be to partner with other apps or companies like hospitals to gather some of this data. 
+
+* Implementing pop-up marketing, either in person or through live streams online (Youtube, Tiktok, etc.) where we can learn more about our users , their needs and how we can support them in their fitness journey.
+
+
+**Conclusion**
+
+Bellabeat has strengths to share and opportunities to grow. With the right amount of effort, in implementing the right marketing strategies, collecting data that ROCCC's, and consistency, we can increase global market share within the next few years.
