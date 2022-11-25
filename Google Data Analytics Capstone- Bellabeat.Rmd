@@ -91,7 +91,7 @@ Next will be to import the data sets to be used.
 **Import csv files**
 ```{r import csv files, warning=FALSE}
 
-setwd("C:\\Users\\Ofumae\\OneDrive - University Of Oregon\\Desktop\\Personal Docs\\GDA\\Fitabase Data 4.12.16-5.12.16") #set working directory
+getwd() #set working directory
 
 daily_activity <- read.csv("dailyActivity_merged.csv")
 sleep_day <- read.csv("sleepDay_merged.csv")
